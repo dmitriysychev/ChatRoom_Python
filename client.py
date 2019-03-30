@@ -4,26 +4,28 @@ import sys
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 server_address = ('localhost', 10000)
-print (sys.stderr, 'connecting to %s port %s', server_address)
+print ('connecting to "%s" port "%s"', server_address)
 
 sock.connect(server_address)
 
 try:
     
     # Send data
-    message = 'This is the message.  It will be repeated.'
-    print (sys.stderr, 'sending "%s"' % message)
-    sock.sendall(message.encode())
-
-    # Look for the response
-    amount_received = 0
-    amount_expected = len(message)
-    
-    while amount_received < amount_expected:
+    more = True
+    while (more):
+        message = input("What message do you want to send (Type 'closecon' to close connection): ")
+        
+        print ('sending "%s"' % message)
+        sock.sendall(bytes(message, encoding='UTF-8'))
+        if (message == "closecon"):
+            more = False
+            break
         data = sock.recv(16384).decode()
-        amount_received += len(data)
-        print (sys.stderr, 'received "%s"' % data)
-
+        print ('received "%s"' % data)
+        check = input("Do you want to send more? y/n -->")
+        more = True if check == "y" else False
 finally:
-    print (sys.stderr, 'closing socket')
+    message = "closecon"
+    sock.sendall(message.encode())
+    print ('closing socket')
     sock.close()

@@ -5,28 +5,36 @@ import sys
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 server_address = ('localhost', 10000)
-print (sys.stderr, 'staring up on %s port %s' % server_address)
+print ('staring up on %s port %s' % server_address)
 sock.bind(server_address)
 
 sock.listen(1)
-
-while True:
-    print (sys.stderr, 'waiting for a connection')
+client = True
+while (client):
+    print ('waiting for a connection')
     connection, client_address = sock.accept()
     try:
-        print  (sys.stderr, 'connection from', client_address)
+        print  ('connection from', client_address)
 
         # Receive the data in small chunks and retransmit it
-        while True:
+        connected = True
+        while (connected):
             data = connection.recv(16384).decode()
-            print (sys.stderr, 'received "%s"' % data)
+            print ('received "%s"' % data)
+            if (data == "closecon"):
+                connected = False
+                client = False
+                break
             if data:
-                print (sys.stderr, 'sending data back to the client')
-                connection.sendall(data.encode())
+                print ('sending data back to the client')
+                connection.sendall(bytes(data, encoding='UTF-8'))
             else:
-                print (sys.stderr, 'no more data from', client_address)
+                print ('no more data from', client_address)
                 break
             
     finally:
         # Clean up the connection
         connection.close()
+        #sock.close()
+print("Closing socket")
+sock.close()
