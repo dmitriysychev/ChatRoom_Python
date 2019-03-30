@@ -6,8 +6,6 @@
         # 7 X 7
 
 # make_move function
-import socket
-import sys
 user_board = []
 size = 0
 
