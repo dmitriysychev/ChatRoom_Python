@@ -77,4 +77,3 @@ print("* - пустая клетка\n0 - промах\n1 - попадание\n
 
 print_board()
 print("\n")
-print_board_version2()
