@@ -6,6 +6,13 @@ class ClientThread(threading.Thread):
                 self.csocket = clientsocket
                 print ("New connection added: ", clientAddress)
         def run(self):
+                name_send = True
+                name = ""
+                print ("Connection from : ", clientAddress)
+                while(name_send):
+                    self.csocket.send(bytes("Hi, What is your name?",'utf-8'))
+                    name = self.csocket.recv(2048)
+                    name_send = False
                 print ("Connection from : ", clientAddress)
                 self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
                 msg = ''
@@ -16,6 +23,11 @@ class ClientThread(threading.Thread):
                         break
                     if msg=='history':
                         self.csocket.send(bytes('\t'.join([' | '.join(str(aaa) for aaa in message) for message in messages]),'UTF-8'))
+                    if msg.find('My name is') > -1:
+                        name = msg.split(' ')[3]
+                        for rec in messages:
+                            if rec[0] == clientAddress:
+                                rec[0] = name
                     else:
                         messages.append([clientAddress, msg])
                         print ("from client", msg)
