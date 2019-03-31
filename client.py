@@ -3,7 +3,7 @@ import sys
 import time 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server_address = ('localhost', 10000)
+server_address = ('212.116.121.138', 3000)
 print ('connecting to %s port %s\n' % server_address)
 
 sock.connect(server_address)
@@ -18,10 +18,10 @@ try:
         print("\nType 'closecon' to close connection\n\n")
         message = input("What message do you want to send: ")
         print ('sending "%s"' % message, end="")
-        for i in range(4):
-            sys.stdout.write('.')
-            sys.stdout.flush()
-            time.sleep(0.5)
+        # for i in range(4):
+        #     sys.stdout.write('.')
+        #     sys.stdout.flush()
+        #     time.sleep(0.5)
             
         sock.sendall(bytes(message, encoding='UTF-8'))
         if (message == "closecon"):
