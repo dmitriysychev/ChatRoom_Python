@@ -21,7 +21,7 @@ try:
         message = input("What message do you want to send: ")
         print ('sending "%s"' % message, end="")
         sock.sendall(bytes(message, encoding='UTF-8'))
-        if (message == "closecon"):
+        if (message == "logout"):
             more = False
             break
         data = sock.recv(16384).decode()
@@ -32,7 +32,7 @@ try:
         check = input("Do you want to send more? y/n -->")
         more = True if check == "y" else False
 finally:
-    message = "closecon"
+    message = "logout"
     sock.sendall(message.encode())
     print ('closing socket')
     sock.close()
