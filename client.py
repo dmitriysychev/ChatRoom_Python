@@ -12,17 +12,13 @@ try:
     
     # Send data
     print(sock.recv(16384).decode())
-    time.sleep(1)
+    name = input()
+    sock.send(bytes(name, encoding=""))
     more = True
     while (more):
         print("\nType 'closecon' to close connection\n\n")
         message = input("What message do you want to send: ")
         print ('sending "%s"' % message, end="")
-        # for i in range(4):
-        #     sys.stdout.write('.')
-        #     sys.stdout.flush()
-        #     time.sleep(0.5)
-            
         sock.sendall(bytes(message, encoding='UTF-8'))
         if (message == "closecon"):
             more = False
