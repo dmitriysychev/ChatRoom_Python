@@ -14,6 +14,7 @@ try:
     print(sock.recv(16384).decode()) # receives name request
     name = input()
     sock.sendall(bytes(name, encoding='UTF-8')) # we send name
+    print(sock.recv(16384).decode()) # We receive response
     more = True
     while (more):
         #print("\nType 'closecon' to close connection\n\n")
@@ -24,7 +25,10 @@ try:
             more = False
             break
         data = sock.recv(16384).decode()
-        print ('\nreceived from server "%s"' % data)
+        if (message != 'history'):
+            print ('\nreceived from server "%s"' % data)
+        else:
+            print('\n\nHistory of messages:\n%s' % data)
         check = input("Do you want to send more? y/n -->")
         more = True if check == "y" else False
 finally:
