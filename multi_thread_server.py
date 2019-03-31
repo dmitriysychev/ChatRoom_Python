@@ -1,4 +1,5 @@
 import socket, threading
+from datetime import datetime
 class ClientThread(threading.Thread):
         def __init__(self,clientAddress,clientsocket,messages,clients):
                 threading.Thread.__init__(self)
@@ -8,22 +9,24 @@ class ClientThread(threading.Thread):
         def run(self):
                 print ("Connection from : ", clientAddress)
                 name = ''
-                nameSend = False
-                while (not nameSend):
+                nameReceived = False
+                while (not nameReceived):
                     self.csocket.send(bytes("Hi, What is your name?",'utf-8'))
                     name = self.csocket.recv(1024).decode()
-                    self.csocket.send(bytes("Hello, nice to meet you, ",'utf-8'))
-                    nameSend = True
+                    self.csocket.send(bytes("Hello, nice to meet you, %s" % name, 'utf-8'))
+                    nameReceived = True
                 msg = ''
                 while True:
                     data = self.csocket.recv(2048)
+                    timeNow = datetime.now()
+                    current_time = timeNow.strftime("%H:%M:%S")
                     msg = data.decode()
                     if msg=='bye':
                         break
                     if msg=='history':
                         self.csocket.send(bytes('\n'.join([' | '.join(str(aaa) for aaa in message) for message in messages]),'UTF-8'))
                     else:
-                        messages.append([name, msg])
+                        messages.append([name, msg, current_time])
                         print ("from client", msg)
                         self.csocket.send(bytes(msg,'UTF-8'))
                     print ("Client at ", clientAddress , " disconnected...")
