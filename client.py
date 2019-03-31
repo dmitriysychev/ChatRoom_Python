@@ -3,7 +3,7 @@ import sys
 import time 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server_address = ('212.116.121.138', 3000)
+server_address = ('localhost', 3000)
 print ('connecting to %s port %s\n' % server_address)
 
 sock.connect(server_address)
@@ -11,12 +11,12 @@ sock.connect(server_address)
 try:
     
     # Send data
-    print(sock.recv(16384).decode())
+    print(sock.recv(16384).decode()) # receives name request
     name = input()
-    sock.send(bytes(name, encoding=""))
+    sock.sendall(bytes(name, encoding='UTF-8')) # we send name
     more = True
     while (more):
-        print("\nType 'closecon' to close connection\n\n")
+        #print("\nType 'closecon' to close connection\n\n")
         message = input("What message do you want to send: ")
         print ('sending "%s"' % message, end="")
         sock.sendall(bytes(message, encoding='UTF-8'))
