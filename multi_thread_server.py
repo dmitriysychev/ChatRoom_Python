@@ -1,4 +1,4 @@
-import socket, threading
+import socket, threading, time
 from datetime import datetime
 class ClientThread(threading.Thread):
         def __init__(self,clientAddress,clientsocket,messages,clients):
@@ -25,6 +25,20 @@ class ClientThread(threading.Thread):
                         break
                     if msg=='history':
                         self.csocket.send(bytes('\n'.join([' | '.join(str(aaa) for aaa in message) for message in messages]),'UTF-8'))
+                    elif msg.find("/from") > -1 :
+                        userName = msg.split(' ')[1]
+                        print("User {name} waiting messages from {userName}".format(name=name, userName = userName))
+                        messageSent = False
+                        startTime = timeNow.strftime("%H:%M:%S")
+                        while(not messageSent):
+                            newMessages = []
+                            for elemHist in messages:
+                                if(timeNow.strptime(elemHist[2], "%H:%M:%S") > timeNow.strptime(startTime, "%H:%M:%S") and elemHist[0] == userName):
+                                    newMessages.append([elemHist[2], elemHist[1]])
+                            if (len(newMessages) > 0):
+                                self.csocket.send(bytes('\n'.join(['\t'.join(str(aaa) for aaa in message) for message in newMessages]),'UTF-8'))
+                                messageSent = True
+                            time.sleep(1)
                     else:
                         messages.append([name, msg, current_time])
                         print ("from client", msg)
@@ -48,8 +62,3 @@ while True:
     clientsock, clientAddress = server.accept()
     newthread = ClientThread(clientAddress, clientsock, messages, clients)
     newthread.start()
-
-
-
-
-
