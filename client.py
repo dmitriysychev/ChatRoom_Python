@@ -3,6 +3,11 @@ import sys
 import time 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+HOST = input("Enter server IP or nothing to default: ")
+HOST = (HOST if HOST != '' else 'localhost')
+
+print('HOST : ' + HOST)
+
 server_address = ('localhost', 3000)
 print ('connecting to %s port %s\n' % server_address)
 
