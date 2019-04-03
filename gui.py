@@ -9,6 +9,7 @@ isEstablished = False
 #initializing part
 root = Tk()
 root.geometry('800x400+200+100')
+root.resizable(False, False)
 
 #connection block BEGIN
 connectTo = LabelFrame(text = "Connect to")
@@ -42,7 +43,7 @@ onlineLabel = Label(onlineFrame, text = "Online users")
 onlineUsersList = Listbox(onlineFrame, height = 13)
 passLabel = Label(onlineFrame, height = 4)
 
-chatFrame = Frame(bodyFrame)
+chatFrame = LabelFrame(bodyFrame, text = "Chat")
 chatText = Text(chatFrame, height = 15)
 messageFrame = Frame(chatFrame)
 messageField = Text(messageFrame, width = 70, height = 3)
@@ -52,6 +53,7 @@ sendButton = Button(messageFrame, text = "Send", height = 3)
 #logic part
 #functions defs
 def connect(event):
+    global isEstablished
     HOST = hostEntry.get()
     PORT = portEntry.get()
     userName = userNameEntry.get()
@@ -70,27 +72,46 @@ connectButton.bind('<Button-1>', connect)
 
 def updateUsers():
     onlineUsersList.after(1000, updateUsers)
-    sock.send(bytes("/online", encoding='UTF-8'))
-    onlineUsers = sock.recv(16384).decode().split(' ')
-    oldList = onlineUsersList.get(0, END)
-    i = 0
-    
-    for elem in oldList:
-        #if old items not in new - delete them
-        if elem not in onlineUsers:
-            onlineUsersList.delete(i,i)
-        else:
-            onlineUsers.remove(elem)
-        i += 1
-    for elem in onlineUsers:
-        onlineUsersList.insert(END, elem)
+    if isEstablished:
+        sock.send(bytes("/online", encoding='UTF-8'))
+        onlineUsers = sock.recv(16384).decode().split(' ')
+        oldList = onlineUsersList.get(0, END)
+        i = 0
+        
+        for elem in oldList:
+            #if old items not in new - delete them
+            if elem not in onlineUsers:
+                onlineUsersList.delete(i,i)
+            else:
+                onlineUsers.remove(elem)
+            i += 1
+        for elem in onlineUsers:
+            onlineUsersList.insert(END, elem)
 
+def openChat(evt):
+    w = evt.widget
+    index = int(w.curselection()[0])
+    value = w.get(index)
+    chatFrame.configure(text = "Chat with" + value)
+    chatText.after(100, getHistory)
 
+def getHistory():
+    userTo = onlineUsersList.get(int(onlineUsersList.curselection()[0]))
+    sock.send(bytes("/history "+userTo))
+    history = sock.recv(16384).decode()
+    #TODO insert history 
+    print(history)
 
 def window_deleted():
     sock.send(bytes("bye", 'UTF-8'))
     root.quit()
 
+def sendMessage():
+    userTo = onlineUsersList.get(int(onlineUsersList.curselection()[0]))
+    messageText = messageField.get(0, END)
+    sock.send(bytes("/sendto " + userTo + " " + messageText))
+
+sendButton.bind('<Button-1>', sendMessage)
 #rendering part
 connectTo.pack(ipadx = 5, ipady = 5)
 
@@ -111,6 +132,7 @@ bodyFrame.pack()
 onlineFrame.pack(side = LEFT)
 onlineLabel.pack()
 onlineUsersList.pack()
+onlineUsersList.bind('<<ListboxSelect>>', openChat)
 passLabel.pack()
 chatFrame.pack(side = RIGHT, ipady = 5)
 chatText.pack(side = TOP)
