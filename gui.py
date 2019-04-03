@@ -5,7 +5,7 @@ import time
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 isEstablished = False
-
+#pirnt
 #initializing part
 root = Tk()
 root.geometry('800x400+200+100')
