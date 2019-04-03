@@ -1,4 +1,4 @@
-import socket
+import socket, random
 import sys
 import time 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,6 +12,7 @@ server_address = ('localhost', 3000)
 print ('connecting to %s port %s\n' % server_address)
 
 sock.connect(server_address)
+sock.send(bytes("Test" + str(random.randint(0,10)), 'UTF-8'))
 
 try:
     

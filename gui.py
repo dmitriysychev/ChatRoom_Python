@@ -1,9 +1,10 @@
 from tkinter import *
-import socket
+import socket, random
 import sys
 import time 
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+isEstablished = False
 
 #initializing part
 root = Tk()
@@ -20,9 +21,16 @@ labelUser = Label(connLabels, text = "Name", width = 25)
 
 connEntry = Frame(paramFrame)
 hostEntry = Entry(connEntry, width = 25)
+hostEntry.delete(0,END)
+hostEntry.insert(0, "localhost")
 portEntry = Entry(connEntry, width = 25)
+portEntry.delete(0,END)
+portEntry.insert(0, "3000")
 userNameEntry = Entry(connEntry, width = 25)
+userNameEntry.delete(0,END)
+userNameEntry.insert(0, "Test" + str(random.randint(10,99)))
 
+statusLabel = Label(connectTo, width = 5, height = 5, bg = "red")
 connectButton = Button(connectTo, text = "Connect", width = 10, height = 1)
 #connection block END
 
@@ -50,36 +58,44 @@ def connect(event):
     #TODO preconditions
     server_address = (str(HOST), int(PORT))
     sock.connect(server_address)
-    print(sock.recv(16384).decode())
-    time.sleep(1)
-    sock.sendall(bytes(userName, encoding='UTF-8'))
-    print("Connection established")
+    sock.send(bytes(userName, encoding='UTF-8'))
+    if (len(sock.recv(16384).decode()) > 0):
+        #if connection established
+        statusLabel.configure(bg = "green")
+        isEstablished = True
+        onlineUsersList.after_idle(updateUsers)
 
-connectButton.bind('<Button-1>', connect)
+
+connectButton.bind('<Button-1>', connect)   
+
+def updateUsers():
+    onlineUsersList.after(1000, updateUsers)
+    sock.send(bytes("/online", encoding='UTF-8'))
+    onlineUsers = sock.recv(16384).decode().split(' ')
+    oldList = onlineUsersList.get(0, END)
+    i = 0
+    
+    for elem in oldList:
+        #if old items not in new - delete them
+        if elem not in onlineUsers:
+            onlineUsersList.delete(i,i)
+        else:
+            onlineUsers.remove(elem)
+        i += 1
+    for elem in onlineUsers:
+        onlineUsersList.insert(END, elem)
 
 
-'''
-e = Entry(root, width=20)
-b = Button(root, text="Преобразовать")
-l = Label(root, bg='black', fg='white', width=20)
 
-def strToSortlist(event):
-    s = e.get()
-    s = s.split()
-    s.sort()
-    l['text'] = ' '.join(s)
- 
-b.bind('<Button-1>', strToSortlist)
- 
-e.pack()
-b.pack()
-l.pack()
-'''
+def window_deleted():
+    sock.send(bytes("bye", 'UTF-8'))
+    root.quit()
 
 #rendering part
 connectTo.pack(ipadx = 5, ipady = 5)
 
 paramFrame.pack(side = LEFT)
+statusLabel.pack(side = LEFT)
 connectButton.pack(side = RIGHT)
 
 connLabels.pack()
@@ -103,4 +119,5 @@ messageField.pack(side = LEFT, padx = 10)
 sendButton.pack(side = RIGHT)
 
 root.title("Messenger")
+root.protocol('WM_DELETE_WINDOW', window_deleted)
 root.mainloop()

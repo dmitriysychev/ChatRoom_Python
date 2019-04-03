@@ -1,7 +1,7 @@
 import socket, threading, time
 from datetime import datetime
 class ClientThread(threading.Thread):
-        def __init__(self,clientAddress,clientsocket,messages,clients):
+        def __init__(self,clientAddress,clientsocket,messages,clients, users):
                 threading.Thread.__init__(self)
                 clients.append(clientAddress)
                 self.csocket = clientsocket
@@ -11,9 +11,10 @@ class ClientThread(threading.Thread):
                 name = ''
                 nameReceived = False
                 while (not nameReceived):
-                    self.csocket.send(bytes("Hi, What is your name?",'utf-8'))
+                    #self.csocket.send(bytes("Hi, What is your name?",'utf-8'))
                     name = self.csocket.recv(1024).decode()
                     self.csocket.send(bytes("Hello, nice to meet you, %s" % name, 'utf-8'))
+                    users.append(name)
                     nameReceived = True
                 msg = ''
                 while True:
@@ -22,6 +23,9 @@ class ClientThread(threading.Thread):
                     current_time = timeNow.strftime("%H:%M:%S")
                     msg = data.decode()
                     if msg=='bye':
+                        #TODO fix clients update
+                        users.remove(name)
+                        clients.remove(clientAddress)
                         break
                     if msg=='history':
                         self.csocket.send(bytes('\n'.join([' | '.join(str(aaa) for aaa in message) for message in messages]),'UTF-8'))
@@ -39,16 +43,19 @@ class ClientThread(threading.Thread):
                                 self.csocket.send(bytes('\n'.join(['\t'.join(str(aaa) for aaa in message) for message in newMessages]),'UTF-8'))
                                 messageSent = True
                             time.sleep(1)
+                    elif msg.find("/online") > -1 :
+                        self.csocket.send(bytes(' '.join(str(elem) for elem in users), 'UTF-8'))
                     else:
                         messages.append([name, msg, current_time])
                         print ("from client", msg)
                         self.csocket.send(bytes(msg,'UTF-8'))
-                    print ("Client at ", clientAddress , " disconnected...")
+                print ("Client at ", clientAddress , " disconnected...")
 
 LOCALHOST = "localhost"
 PORT = 3000
 messages = []
 clients = []
+users = []
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -60,5 +67,5 @@ print("Waiting for client request..")
 while True:
     server.listen(1)
     clientsock, clientAddress = server.accept()
-    newthread = ClientThread(clientAddress, clientsock, messages, clients)
+    newthread = ClientThread(clientAddress, clientsock, messages, clients, users)
     newthread.start()
