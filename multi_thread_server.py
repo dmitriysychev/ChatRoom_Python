@@ -96,7 +96,7 @@ class DataBase(object):
             @msg - message that was sent
             @time - time the message was sent to client
             '''
-            def history_append(self, fromClient, toClient, msg, time):
+            def history_ppend(self, fromClient, toClient, msg, time):
                 oldsize = len(self.history)
                 self.history.append([fromClient, toClient, msg, time])
                 return oldsize != len(self.history)
