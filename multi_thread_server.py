@@ -1,7 +1,9 @@
 import socket, threading, time
 from datetime import datetime
 class ClientThread(threading.Thread):
-        def __init__(self,clientAddress,clientsocket,messages,clients, users):
+        
+            #END INNER CLASS
+        def __init__(self,clientAddress,clientsocket,messages,clients, users, db):
                 threading.Thread.__init__(self)
                 clients.append(clientAddress)
                 self.csocket = clientsocket
@@ -51,6 +53,71 @@ class ClientThread(threading.Thread):
                         self.csocket.send(bytes(msg,'UTF-8'))
                 print ("Client at ", clientAddress , " disconnected...")
 
+class DataBase(object):
+            #Main dictionary to store addresses and names
+            clients = {} # {name: (addr, port)}
+            # TODO choose the best choice for storing history
+            history = [] # [[namefrom, nameto, msg, history], [-||-]]
+            data = []
+            def __init__(self):
+                print("Database created")
+
+            def insertClient(self, clientAddr, name):
+                oldSize = len(self.clients)
+                self.clients[name] = clientAddr
+                return oldSize != len(self.clients)
+
+            '''
+            Function to get a client address based on its name
+            @param name - client name to find its address
+            '''
+            def getClientAddr(self, name):
+                return self.clients[name]
+
+            '''
+            Function to get a client name based on its address
+            @param addr - client address to find its name
+            '''
+            def getClientName(self, addr):
+                for client in self.clients:
+                    if self.clients[client] == addr:
+                        return self.clients[client]
+            '''
+            Function to return the number of clients
+            '''
+            def size(self):    
+                return len(self.clients)
+
+            '''
+            Function to add history of messages in the format 
+            [fromClient, toClient, message, timeSent]
+            @param fromClient - name of the client that sent msg
+            @param toClient - name of the client msg was sent
+            @msg - message that was sent
+            @time - time the message was sent to client
+            '''
+            def history_append(self, fromClient, toClient, msg, time):
+                oldsize = len(self.history)
+                self.history.append([fromClient, toClient, msg, time])
+                return oldsize != len(self.history)
+
+            def history(self, fromClient, toClient):
+                historyArr = []
+                # for 
+            '''
+            Function to remove client from a database
+            @param name - name of the client to be removed
+            '''
+            def remove(self, name):
+                oldsize = self.size()
+                if name in self.clients:
+                    del self.clients[name]
+                return oldsize != self.size()
+
+
+       
+                
+
 LOCALHOST = "localhost"
 PORT = 3000
 messages = []
@@ -67,5 +134,6 @@ print("Waiting for client request..")
 while True:
     server.listen(1)
     clientsock, clientAddress = server.accept()
+    db = DataBase()
     newthread = ClientThread(clientAddress, clientsock, messages, clients, users)
     newthread.start()
