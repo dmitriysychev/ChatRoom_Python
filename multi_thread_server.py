@@ -1,8 +1,7 @@
 import socket, threading, time
 from datetime import datetime
 class ClientThread(threading.Thread):
-        
-            #END INNER CLASS
+       
         def __init__(self,clientAddress,clientsocket,messages,clients, users, db):
                 threading.Thread.__init__(self)
                 clients.append(clientAddress)
@@ -67,7 +66,7 @@ class DataBase(object):
             '''
             def insertClient(self, clientAddr, name):
                 oldSize = len(self.clients)
-                if name not it clients:
+                if name not in clients:
                         self.clients[name] = clientAddr
                 return oldSize != len(self.clients)
 
@@ -111,7 +110,7 @@ class DataBase(object):
             def history(self, fromClient_name, toClient_name):
                 historyArr = []
                 for unit in history:
-                        if unit[0] == fromClient && unit[1] == toClient:
+                        if unit[0] == fromClient and unit[1] == toClient:
                                 historyArr.append(unit)
                 for hist in historyArr:
                         print("Sent from {fromC} to {toC}: \'{message}'\, sent at {timeSent}".format(fromC = fromClient, toC = toClient, message = msg, timeSent = time))
