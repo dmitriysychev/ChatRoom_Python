@@ -16,10 +16,11 @@ class ClientThread(threading.Thread):
                     #self.csocket.send(bytes("Hi, What is your name?",'utf-8'))
                     name = self.csocket.recv(1024).decode()
                     self.csocket.send(bytes("Hello, nice to meet you, %s" % name, 'utf-8'))
-                    #users.append(name)
+                    users.append(name)
                     db.changeName(clientAddress, name)
                     nameReceived = True
                 msg = ''
+                print("DB SIZE IS {size}".format(size = db.size())) # debug check
                 while True:
                     data = self.csocket.recv(2048)
                     timeNow = datetime.now()
@@ -28,7 +29,7 @@ class ClientThread(threading.Thread):
                     #db.append()
                     if msg=='bye':
                         #TODO fix clients update
-                        #users.remove(name)
+                        users.remove(name)
                         db.remove(name)
                         #clients.remove(clientAddress)
                         break
