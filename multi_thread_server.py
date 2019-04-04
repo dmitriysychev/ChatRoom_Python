@@ -25,7 +25,7 @@ class ClientThread(threading.Thread):
                     timeNow = datetime.now()
                     current_time = timeNow.strftime("%H:%M:%S")
                     msg = data.decode()
-                    db.append()
+                    #db.append()
                     if msg=='bye':
                         #TODO fix clients update
                         #users.remove(name)
