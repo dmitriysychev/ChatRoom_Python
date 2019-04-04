@@ -62,9 +62,13 @@ class DataBase(object):
             def __init__(self):
                 print("Database created")
 
+            '''
+            Function to insert client in the database
+            '''
             def insertClient(self, clientAddr, name):
                 oldSize = len(self.clients)
-                self.clients[name] = clientAddr
+                if name not it clients:
+                        self.clients[name] = clientAddr
                 return oldSize != len(self.clients)
 
             '''
@@ -96,14 +100,22 @@ class DataBase(object):
             @msg - message that was sent
             @time - time the message was sent to client
             '''
-            def history_append(self, fromClient, toClient, msg, time):
+            def history_append(self, fromClient_name, toClient_name, msg, time):
                 oldsize = len(self.history)
-                self.history.append([fromClient, toClient, msg, time])
+                self.history.append([fromClient_name, toClient_name, msg, time])
                 return oldsize != len(self.history)
-
-            def history(self, fromClient, toClient):
+                
+            '''
+            Function to print history 
+            '''
+            def history(self, fromClient_name, toClient_name):
                 historyArr = []
-                # for 
+                for unit in history:
+                        if unit[0] == fromClient && unit[1] == toClient:
+                                historyArr.append(unit)
+                for hist in historyArr:
+                        print("Sent from {fromC} to {toC}: \'{message}'\, sent at {timeSent}".format(fromC = fromClient, toC = toClient, message = msg, timeSent = time))
+                        
             '''
             Function to remove client from a database
             @param name - name of the client to be removed
