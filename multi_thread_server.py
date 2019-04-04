@@ -1,11 +1,11 @@
 import socket, threading, time
 from datetime import datetime
 class ClientThread(threading.Thread):
-        
-            #END INNER CLASS
+       
         def __init__(self,clientAddress,clientsocket,messages,clients, users, db):
                 threading.Thread.__init__(self)
                 clients.append(clientAddress)
+                db.insertClient(clientAddress)
                 self.csocket = clientsocket
                 print ("New connection added: ", clientAddress)
         def run(self):
@@ -16,7 +16,8 @@ class ClientThread(threading.Thread):
                     #self.csocket.send(bytes("Hi, What is your name?",'utf-8'))
                     name = self.csocket.recv(1024).decode()
                     self.csocket.send(bytes("Hello, nice to meet you, %s" % name, 'utf-8'))
-                    users.append(name)
+                    #users.append(name)
+                    db.changeName(clientAddress, name)
                     nameReceived = True
                 msg = ''
                 while True:
@@ -24,10 +25,12 @@ class ClientThread(threading.Thread):
                     timeNow = datetime.now()
                     current_time = timeNow.strftime("%H:%M:%S")
                     msg = data.decode()
+                    db.append()
                     if msg=='bye':
                         #TODO fix clients update
-                        users.remove(name)
-                        clients.remove(clientAddress)
+                        #users.remove(name)
+                        db.remove(name)
+                        #clients.remove(clientAddress)
                         break
                     if msg=='history':
                         self.csocket.send(bytes('\n'.join([' | '.join(str(aaa) for aaa in message) for message in messages]),'UTF-8'))
@@ -62,11 +65,18 @@ class DataBase(object):
             def __init__(self):
                 print("Database created")
 
-            def insertClient(self, clientAddr, name):
+            '''
+            Function to insert client in the database
+            '''
+            def insertClient (self, addr):
                 oldSize = len(self.clients)
-                self.clients[name] = clientAddr
+                if addr not in clients:
+                    self.clients[addr] = 0
                 return oldSize != len(self.clients)
 
+            def changeName(self, addr, name):
+                if addr in clients:
+                    self.clients[addr] = name
             '''
             Function to get a client address based on its name
             @param name - client name to find its address
@@ -96,22 +106,31 @@ class DataBase(object):
             @msg - message that was sent
             @time - time the message was sent to client
             '''
-            def history_ppend(self, fromClient, toClient, msg, time):
+            def append(self, fromClient_name, toClient_name, msg, time):
                 oldsize = len(self.history)
-                self.history.append([fromClient, toClient, msg, time])
+                self.history.append([fromClient_name, toClient_name, msg, time])
                 return oldsize != len(self.history)
-
-            def history(self, fromClient, toClient):
+                
+            '''
+            Function to print history 
+            '''
+            def history(self, fromClient_name, toClient_name):
                 historyArr = []
-                # for 
+                for unit in history:
+                        if unit[0] == fromClient_name and unit[1] == toClient_name:
+                                historyArr.append(unit)
+                for hist in historyArr:
+                        print("Sent from {fromC} to {toC}: \'{message}'\, sent at {timeSent}".format(fromC = fromClient, toC = toClient, message = msg, timeSent = time))
+                        
             '''
             Function to remove client from a database
             @param name - name of the client to be removed
             '''
             def remove(self, name):
                 oldsize = self.size()
-                if name in self.clients:
-                    del self.clients[name]
+                for client in clients:
+                    if clients[client] == name:
+                        del clients[client]
                 return oldsize != self.size()
 
 
@@ -135,5 +154,5 @@ while True:
     server.listen(1)
     clientsock, clientAddress = server.accept()
     db = DataBase()
-    newthread = ClientThread(clientAddress, clientsock, messages, clients, users)
+    newthread = ClientThread(clientAddress, clientsock, messages, clients, users, db)
     newthread.start()
