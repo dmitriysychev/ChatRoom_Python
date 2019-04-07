@@ -13,13 +13,11 @@ class ClientThread(threading.Thread):
                 name = ''
                 nameReceived = False
                 while (not nameReceived):
-                    #self.csocket.send(bytes("Hi, What is your name?",'utf-8'))
                     name = self.csocket.recv(1024).decode()
                     self.csocket.send(bytes("Hello, nice to meet you, %s" % name, 'utf-8'))
                     users.append(name)
                     nameReceived = True
                 print ("NAME OF USER IS: %s" % name)
-                #db.changeName(clientAddress, name)
                 db.clients[clientAddress] = name
                 print("DB GET NAME METHOD: %s" % db.getClientName(clientAddress))
                 msg = ''
@@ -34,19 +32,15 @@ class ClientThread(threading.Thread):
                         #TODO fix clients update
                         users.remove(name)
                         db.remove(name)
-                        #clients.remove(clientAddress)
                         break
                     if msg=='history':
                         self.csocket.send(bytes('\n'.join([' | '.join(str(aaa) for aaa in message) for message in messages]),'UTF-8'))
                     elif msg.find('/history') > -1:
                         toUser = msg.split(' ')[1]
                         fromUser = name
-<<<<<<< HEAD
-                        #print(name)
-=======
->>>>>>> bdc296b837a3200df9ed7fc332b2c4033cf825b7
-                        db.showHistory(fromUser, toUser)
-                        self.csocket.send(bytes("test str1 | test str2",'UTF-8'))
+                        hist = db.showHistory(fromUser, toUser)
+                        toSend = ' '.join(hist)
+                        self.csocket.send(bytes(toSend,'UTF-8'))
                     elif msg.find("/from") > -1 :
                         userName = msg.split(' ')[1]
                         print("User {name} waiting messages from {userName}".format(name=name, userName = userName))
@@ -144,16 +138,10 @@ class DataBase(object):
                 for unit in self.history:
                         if unit[0] == fromClient_name and unit[1] == toClient_name:
                                 historyArr.append(unit)
-<<<<<<< HEAD
-                # for hist in historyArr:
-                #         print("Sent from {fromC} to {toC}: {message}. Sent at {timeSent}".format(fromC = hist[0], toC = hist[1], message = ' '.join(str(msg) for msg in hist[2]), timeSent = hist[3]))
-                return historyArr
-=======
                 for hist in historyArr:
                         rec = str(hist[0]) + " " + str(hist[1]) + " " + str(hist[2]) + " " + str(hist[3]) + "|"
                         retVal.append(rec)
                         #print("Sent from {fromC} to {toC}: {message}. Sent at {timeSent}".format(fromC = hist[0], toC = hist[1], message = ' '.join(str(msg) for msg in hist[2]), timeSent = hist[3]))
->>>>>>> a8c1b1957794ef7fd22c5d9dad239ea9544c0010
                         
                 return retVal
             '''
