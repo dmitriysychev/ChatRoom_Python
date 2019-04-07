@@ -55,6 +55,7 @@ class ClientThread(threading.Thread):
                         fromName = db.getClientName(clientAddress)
                         toWhom = msg.split(' ')[1]
                         db.append(fromName, toWhom, msg.split(' ')[2:], current_time)
+                        print(db.showHistory(fromName, toWhom))
                     else:
                         messages.append([name, msg, current_time])
                         print ("from client", msg)
@@ -112,20 +113,20 @@ class DataBase(object):
             @time - time the message was sent to client
             '''
             def append(self, fromClient_name, toClient_name, msg, time):
-                oldsize = len(self.history)
+                #oldsize = len(self.history)
                 self.history.append([fromClient_name, toClient_name, msg, time])
-                return oldsize != len(self.history)
+                #return oldsize != len(self.history)
                 
             '''
             Function to print history 
             '''
-            def history(self, fromClient_name, toClient_name):
+            def showHistory(self, fromClient_name, toClient_name):
                 historyArr = []
-                for unit in history:
+                for unit in self.history:
                         if unit[0] == fromClient_name and unit[1] == toClient_name:
                                 historyArr.append(unit)
                 for hist in historyArr:
-                        print("Sent from {fromC} to {toC}: \'{message}'\, sent at {timeSent}".format(fromC = fromClient, toC = toClient, message = msg, timeSent = time))
+                        print("Sent from {fromC} to {toC}: \'{message}'\, sent at {timeSent}".format(fromC = fromClient_name, toC = toClient_name, message = hist[2], timeSent = hist[3]))
                         
             '''
             Function to remove client from a database
