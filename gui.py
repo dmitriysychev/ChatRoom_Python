@@ -106,7 +106,7 @@ def window_deleted():
     sock.send(bytes("bye", 'UTF-8'))
     root.quit()
 
-def sendMessage():
+def sendMessage(self):
     userTo = onlineUsersList.get(int(onlineUsersList.curselection()[0]))
     messageText = messageField.get(0, END)
     sock.send(bytes("/sendto " + userTo + " " + messageText))
