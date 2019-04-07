@@ -39,10 +39,11 @@ class ClientThread(threading.Thread):
                         toUser = msg.split(' ')[1]
                         fromUser = name
                         #print(name)
-                        db.showHistory(fromUser, toUser)
-                        self.csocket.send(bytes("test str1 | test str2",'UTF-8'))
+                        #db.showHistory(fromUser, toUser)
+                        #self.csocket.send(bytes("test str1 | test str2",'UTF-8'))
                         hist = db.showHistory(fromUser, toUser)
                         toSend = ' '.join(hist)
+                        print(toSend)
                         self.csocket.send(bytes(toSend,'UTF-8'))
                     elif msg.find("/from") > -1 :
                         userName = msg.split(' ')[1]
