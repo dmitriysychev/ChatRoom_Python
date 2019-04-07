@@ -107,7 +107,7 @@ def getHistory():
         #print("THis is rec %s " % rec)
         #TODO fix parse
         try:
-            toPrint = str(rec[3]) + '\t' + ''.join((str(msg) for msg in rec[2]))
+            toPrint = str(rec[3]) + '>>\t' + ''.join((str(msg) for msg in rec[2]))
             chatText.insert(END, toPrint+'\n')
         except:
             continue
