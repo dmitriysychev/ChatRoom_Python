@@ -7,9 +7,10 @@ class ClientThread(threading.Thread):
                 clients.append(clientAddress)
                 db.insertClient(clientAddress)
                 self.csocket = clientsocket
-                print ("New connection added: ", clientAddress)
+                self.clientAddress = clientAddress
+                print ("New connection added: ", self.clientAddress)
         def run(self):
-                print ("Connection from : ", clientAddress)
+                print ("Connection from : ", self.clientAddress)
                 name = ''
                 nameReceived = False
                 while (not nameReceived):
@@ -18,8 +19,8 @@ class ClientThread(threading.Thread):
                     users.append(name)
                     nameReceived = True
                 print ("NAME OF USER IS: %s" % name)
-                db.clients[clientAddress] = name
-                print("DB GET NAME METHOD: %s" % db.getClientName(clientAddress))
+                db.clients[self.clientAddress] = name
+                print("DB GET NAME METHOD: %s" % db.getClientName(self.clientAddress))
                 msg = ''
                 print("DB SIZE IS {size}".format(size = db.size())) # debug check
                 while True:
@@ -33,44 +34,29 @@ class ClientThread(threading.Thread):
                         users.remove(name)
                         db.remove(name)
                         break
-                    if msg=='history':
-                        self.csocket.send(bytes('\n'.join([' | '.join(str(aaa) for aaa in message) for message in messages]),'UTF-8'))
                     elif msg.find('/history') > -1:
                         toUser = msg.split(' ')[1]
                         fromUser = name
                         hist = db.showHistory(toUser, fromUser)
                         toSend = ' '.join(hist)
-                        print("to send \n")
-                        print(toSend)
+                        #print("to send \n")
+                        #print(toSend)
                         if len(toSend) < 2:
                             toSend = "No messages |"
                         self.csocket.send(bytes(toSend,'UTF-8'))
-                    elif msg.find("/from") > -1 :
-                        userName = msg.split(' ')[1]
-                        print("User {name} waiting messages from {userName}".format(name=name, userName = userName))
-                        messageSent = False
-                        startTime = timeNow.strftime("%H:%M:%S")
-                        while(not messageSent):
-                            newMessages = []
-                            for elemHist in messages:
-                                if(timeNow.strptime(elemHist[2], "%H:%M:%S") > timeNow.strptime(startTime, "%H:%M:%S") and elemHist[0] == userName):
-                                    newMessages.append([elemHist[2], elemHist[1]])
-                            if (len(newMessages) > 0):
-                                self.csocket.send(bytes('\n'.join(['\t'.join(str(aaa) for aaa in message) for message in newMessages]),'UTF-8'))
-                                messageSent = True
-                            time.sleep(1)
                     elif msg.find("/online") > -1 :
                         self.csocket.send(bytes(' '.join(str(elem) for elem in users), 'UTF-8'))
                     elif msg.find("/sendto") > -1:
-                        fromName = db.getClientName(clientAddress)
-                        #print ("From name: %s" % fromName)
+                        fromName = db.getClientName(self.clientAddress)
+                        print ("From name: %s" % fromName)
                         toWhom = msg.split(' ')[1]
+                        print(toWhom)
                         db.append(fromName, toWhom, msg.split(' ')[2:], current_time)
                         #print(db.showHistory(fromName, toWhom))
                     else:
                         messages.append([name, msg, current_time])
                         self.csocket.send(bytes("ERRORRRRR",'UTF-8'))
-                print ("Client at ", clientAddress , " disconnected...")
+                print ("Client at ", self.clientAddress , " disconnected...")
 
 class DataBase(object):
     #FOR COMMIT
@@ -136,6 +122,7 @@ class DataBase(object):
             def showHistory(self, fromClient_name, toClient_name):
                 historyArr = []
                 retVal = []
+                #print(self.history)
                 for unit in self.history:
                         if unit[0] == fromClient_name and unit[1] == toClient_name:
                                 historyArr.append(unit)
