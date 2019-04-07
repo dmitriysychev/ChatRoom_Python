@@ -26,7 +26,7 @@ class ClientThread(threading.Thread):
                     timeNow = datetime.now()
                     current_time = timeNow.strftime("%H:%M:%S")
                     msg = data.decode()
-                    #db.append()
+                    
                     if msg=='bye':
                         #TODO fix clients update
                         users.remove(name)
@@ -51,6 +51,10 @@ class ClientThread(threading.Thread):
                             time.sleep(1)
                     elif msg.find("/online") > -1 :
                         self.csocket.send(bytes(' '.join(str(elem) for elem in users), 'UTF-8'))
+                    elif msg.find("/sendto") > -1:
+                        fromName = db.getClientName(clientAddress)
+                        toWhom = msg.split(' ')[1]
+                        db.append(fromName, toWhom, msg.split(' ')[2:], current_time)
                     else:
                         messages.append([name, msg, current_time])
                         print ("from client", msg)
