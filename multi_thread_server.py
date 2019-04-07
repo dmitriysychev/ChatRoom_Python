@@ -38,6 +38,11 @@ class ClientThread(threading.Thread):
                         break
                     if msg=='history':
                         self.csocket.send(bytes('\n'.join([' | '.join(str(aaa) for aaa in message) for message in messages]),'UTF-8'))
+                    elif msg.find('/histoy') > -1:
+                        toUser = msg.split(' ')[1]
+                        fromUser = name
+                        print(name)
+                        db.showHistory(fromUser, toUser)
                     elif msg.find("/from") > -1 :
                         userName = msg.split(' ')[1]
                         print("User {name} waiting messages from {userName}".format(name=name, userName = userName))
