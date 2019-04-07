@@ -127,7 +127,7 @@ class DataBase(object):
                         if unit[0] == fromClient_name and unit[1] == toClient_name:
                                 historyArr.append(unit)
                 for hist in historyArr:
-                        rec = str(hist[0]) + " " + str(hist[1]) + " " + str(hist[2]) + " " + str(hist[3]) + "|"
+                        rec = str(hist[0]) + "~" + str(hist[1]) + "~" + str(hist[2]) + "~" + str(hist[3]) + "|"
                         retVal.append(rec)
                         #print("Sent from {fromC} to {toC}: {message}. Sent at {timeSent}".format(fromC = hist[0], toC = hist[1], message = ' '.join(str(msg) for msg in hist[2]), timeSent = hist[3]))
                 return retVal         
