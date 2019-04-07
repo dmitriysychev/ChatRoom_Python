@@ -123,6 +123,7 @@ def sendMessage(self):
     userTo = onlineUsersList.get(int(onlineUsersList.curselection()[0]))
     messageText = messageField.get(1.0, END)
     sock.send(bytes("/sendto " + userTo + " " + messageText, 'UTF-8'))
+    messageField.delete(1.0,END)
 
 sendButton.bind('<Button-1>', sendMessage)
 #rendering part
