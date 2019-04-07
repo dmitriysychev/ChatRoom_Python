@@ -100,7 +100,9 @@ def getHistory():
     sock.send(bytes("/history "+userTo, 'UTF-8'))
     history = sock.recv(16384).decode()
     #TODO insert history
-    history = history.split('|') 
+    history = history.split('|')
+    for rec in history:
+        chatText.insert(END, rec) 
     print(history)
 
 def window_deleted():
