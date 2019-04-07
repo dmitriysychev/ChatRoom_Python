@@ -17,8 +17,11 @@ class ClientThread(threading.Thread):
                     name = self.csocket.recv(1024).decode()
                     self.csocket.send(bytes("Hello, nice to meet you, %s" % name, 'utf-8'))
                     users.append(name)
-                    db.changeName(clientAddress, name)
                     nameReceived = True
+                print ("NAME OF USER IS: %s" % name)
+                #db.changeName(clientAddress, name)
+                db.clients[clientAddress] = name
+                print("DB GET NAME METHOD: %s" % db.getClientName(clientAddress))
                 msg = ''
                 print("DB SIZE IS {size}".format(size = db.size())) # debug check
                 while True:
@@ -53,6 +56,7 @@ class ClientThread(threading.Thread):
                         self.csocket.send(bytes(' '.join(str(elem) for elem in users), 'UTF-8'))
                     elif msg.find("/sendto") > -1:
                         fromName = db.getClientName(clientAddress)
+                        print ("From name: %s" % fromName)
                         toWhom = msg.split(' ')[1]
                         db.append(fromName, toWhom, msg.split(' ')[2:], current_time)
                         print(db.showHistory(fromName, toWhom))
@@ -64,7 +68,7 @@ class ClientThread(threading.Thread):
 
 class DataBase(object):
             #Main dictionary to store addresses and names
-            clients = {} # {name: (addr, port)}
+            clients = {} # {addr: name}
             # TODO choose the best choice for storing history
             history = [] # [[namefrom, nameto, msg, history], [-||-]]
             data = []
@@ -76,19 +80,21 @@ class DataBase(object):
             '''
             def insertClient (self, addr):
                 oldSize = len(self.clients)
-                if addr not in clients:
+                if addr not in self.clients:
                     self.clients[addr] = 0
                 return oldSize != len(self.clients)
 
             def changeName(self, addr, name):
-                if addr in clients:
+                if addr in self.clients:
                     self.clients[addr] = name
             '''
             Function to get a client address based on its name
             @param name - client name to find its address
             '''
             def getClientAddr(self, name):
-                return self.clients[name]
+                for client in self.clients:
+                    if self.clients[client] == name:
+                        return client
 
             '''
             Function to get a client name based on its address
@@ -96,7 +102,7 @@ class DataBase(object):
             '''
             def getClientName(self, addr):
                 for client in self.clients:
-                    if self.clients[client] == addr:
+                    if client == addr:
                         return self.clients[client]
             '''
             Function to return the number of clients
@@ -126,7 +132,7 @@ class DataBase(object):
                         if unit[0] == fromClient_name and unit[1] == toClient_name:
                                 historyArr.append(unit)
                 for hist in historyArr:
-                        print("Sent from {fromC} to {toC}: {message}, sent at {timeSent}".format(fromC = hist[0], toC = hist[1], message = ' '.join(str(msg) for msg in hist[2]), timeSent = hist[3]))
+                        print("Sent from {fromC} to {toC}: {message}. Sent at {timeSent}".format(fromC = hist[0], toC = hist[1], message = ' '.join(str(msg) for msg in hist[2]), timeSent = hist[3]))
                         
             '''
             Function to remove client from a database
