@@ -123,9 +123,6 @@ def sendMessage(self):
     userTo = onlineUsersList.get(int(onlineUsersList.curselection()[0]))
     messageText = messageField.get(1.0, END)
     sock.send(bytes("/sendto " + userTo + " " + messageText, 'UTF-8'))
-    message_received = sock.recv(16384).decode()
-    print(message_received)
-    print("Sent from {fromC} to {toC}: {message}. Sent at {timeSent}".format(fromC = message_received[0], toC = message_received[1], message = ' '.join(str(msg) for msg in message_received[2]), timeSent = message_received[3]))
 
 sendButton.bind('<Button-1>', sendMessage)
 #rendering part
