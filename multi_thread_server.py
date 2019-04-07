@@ -38,7 +38,7 @@ class ClientThread(threading.Thread):
                     elif msg.find('/history') > -1:
                         toUser = msg.split(' ')[1]
                         fromUser = name
-                        hist = db.showHistory(fromUser, toUser)
+                        hist = db.showHistory(toUser, fromUser)
                         toSend = ' '.join(hist)
                         print("to send \n")
                         print(toSend)
