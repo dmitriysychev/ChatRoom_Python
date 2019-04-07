@@ -92,18 +92,28 @@ def openChat(evt):
     w = evt.widget
     index = int(w.curselection()[0])
     value = w.get(index)
-    chatFrame.configure(text = "Chat with" + value)
+    chatFrame.configure(text = "Chat with " + value)
     chatText.after(100, getHistory)
 
 def getHistory():
+    chatText.after(500, getHistory)
+    toUser= chatFrame['text'].split(' ')[2]
+    sock.send(bytes("/history " + toUser,'UTF-8'))
+    history = sock.recv(16384).decode().split('|')
+    chatText.delete(1.0, END)
+    for rec in history:
+        chatText.insert(END, rec)
+    '''
     userTo = onlineUsersList.get(int(onlineUsersList.curselection()[0]))
     sock.send(bytes("/history "+userTo, 'UTF-8'))
     history = sock.recv(16384).decode()
     #TODO insert history
     history = history.split('|')
+    chatText.delete(1.0, END)
     for rec in history:
         chatText.insert(END, rec) 
     print(history)
+    '''
 
 def window_deleted():
     sock.send(bytes("bye", 'UTF-8'))
