@@ -126,7 +126,7 @@ class DataBase(object):
                         if unit[0] == fromClient_name and unit[1] == toClient_name:
                                 historyArr.append(unit)
                 for hist in historyArr:
-                        print("Sent from {fromC} to {toC}: \'{message}'\, sent at {timeSent}".format(fromC = fromClient_name, toC = toClient_name, message = hist[2], timeSent = hist[3]))
+                        print("Sent from {fromC} to {toC}: {message}, sent at {timeSent}".format(fromC = hist[0], toC = hist[1], message = ' '.join(str(msg) for msg in hist[2]), timeSent = hist[3]))
                         
             '''
             Function to remove client from a database
