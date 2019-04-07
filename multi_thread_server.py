@@ -41,7 +41,7 @@ class ClientThread(threading.Thread):
                     elif msg.find('/history') > -1:
                         toUser = msg.split(' ')[1]
                         fromUser = name
-                        print(name)
+                        #print(name)
                         db.showHistory(fromUser, toUser)
                         self.csocket.send(bytes("test str1 | test str2",'UTF-8'))
                     elif msg.find("/from") > -1 :
@@ -62,10 +62,13 @@ class ClientThread(threading.Thread):
                         self.csocket.send(bytes(' '.join(str(elem) for elem in users), 'UTF-8'))
                     elif msg.find("/sendto") > -1:
                         fromName = db.getClientName(clientAddress)
-                        print ("From name: %s" % fromName)
+                        #print ("From name: %s" % fromName)
                         toWhom = msg.split(' ')[1]
                         db.append(fromName, toWhom, msg.split(' ')[2:], current_time)
-                        print(db.showHistory(fromName, toWhom))
+                       # print(db.showHistory(fromName, toWhom))
+                        history_array = db.showHistory(fromName, toWhom)
+                        #' '.join(['\t'.join(str(msg) for msg in hist) for hist in history_array]
+                        self.csocket.send(bytes(' '.join(['\t'.join(str(msg) for msg in hist) for hist in history_array]), 'UTF-8'))
                     else:
                         messages.append([name, msg, current_time])
                         print ("from client", msg)
@@ -137,8 +140,9 @@ class DataBase(object):
                 for unit in self.history:
                         if unit[0] == fromClient_name and unit[1] == toClient_name:
                                 historyArr.append(unit)
-                for hist in historyArr:
-                        print("Sent from {fromC} to {toC}: {message}. Sent at {timeSent}".format(fromC = hist[0], toC = hist[1], message = ' '.join(str(msg) for msg in hist[2]), timeSent = hist[3]))
+                # for hist in historyArr:
+                #         print("Sent from {fromC} to {toC}: {message}. Sent at {timeSent}".format(fromC = hist[0], toC = hist[1], message = ' '.join(str(msg) for msg in hist[2]), timeSent = hist[3]))
+                return historyArr
                         
             '''
             Function to remove client from a database
