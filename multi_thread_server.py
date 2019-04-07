@@ -145,8 +145,8 @@ class DataBase(object):
             '''
             def remove(self, name):
                 oldsize = self.size()
-                for client in clients:
-                    if clients[client] == name:
+                for client in self.clients:
+                    if self.clients[client] == name:
                         del clients[client]
                 return oldsize != self.size()
 
