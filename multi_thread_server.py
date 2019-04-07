@@ -68,8 +68,7 @@ class ClientThread(threading.Thread):
                         self.csocket.send(bytes(' '.join(['\t'.join(str(msg) for msg in hist) for hist in history_array]), 'UTF-8'))
                     else:
                         messages.append([name, msg, current_time])
-                        print ("from client", msg)
-                        self.csocket.send(bytes(msg,'UTF-8'))
+                        self.csocket.send(bytes("ERRORRRRR",'UTF-8'))
                 print ("Client at ", clientAddress , " disconnected...")
 
 class DataBase(object):
