@@ -18,11 +18,8 @@ class ClientThread(threading.Thread):
                     self.csocket.send(bytes("Hello, nice to meet you, %s" % name, 'utf-8'))
                     users.append(name)
                     nameReceived = True
-                print ("NAME OF USER IS: %s" % name)
                 db.clients[self.clientAddress] = name
-                print("DB GET NAME METHOD: %s" % db.getClientName(self.clientAddress))
                 msg = ''
-                print("DB SIZE IS {size}".format(size = db.size())) # debug check
                 while True:
                     data = self.csocket.recv(2048)
                     timeNow = datetime.now()
@@ -39,8 +36,6 @@ class ClientThread(threading.Thread):
                         fromUser = name
                         hist = db.showHistory(toUser, fromUser)
                         toSend = ' '.join(hist)
-                        #print("to send \n")
-                        #print(toSend)
                         if len(toSend) < 2:
                             toSend = "No messages |"
                         self.csocket.send(bytes(toSend,'UTF-8'))
@@ -48,11 +43,9 @@ class ClientThread(threading.Thread):
                         self.csocket.send(bytes(' '.join(str(elem) for elem in users), 'UTF-8'))
                     elif msg.find("/sendto") > -1:
                         fromName = db.getClientName(self.clientAddress)
-                        print ("From name: %s" % fromName)
                         toWhom = msg.split(' ')[1]
-                        print(toWhom)
-                        db.append(fromName, toWhom, msg.split(' ')[2:], current_time)
-                        #print(db.showHistory(fromName, toWhom))
+                        # print(' '.join(str(el) for el in msg.split(' ')[2:(len(msg) - len(current_time)) - 1]))
+                        db.append(fromName, toWhom, ' '.join(str(el) for el in msg.split(' ')[2:(len(msg) - len(current_time)) - 1]), current_time)
                     else:
                         messages.append([name, msg, current_time])
                         self.csocket.send(bytes("ERRORRRRR",'UTF-8'))
@@ -63,7 +56,7 @@ class DataBase(object):
             #Main dictionary to store addresses and names
             clients = {} # {addr: name}
             # TODO choose the best choice for storing history
-            history = [] # [[namefrom, nameto, msg, history], [-||-]]
+            history = [] # [[namefrom, nameto, msg, time], [-||-]]
             data = []
             def __init__(self):
                 print("Database created")
@@ -112,9 +105,7 @@ class DataBase(object):
             @time - time the message was sent to client
             '''
             def append(self, fromClient_name, toClient_name, msg, time):
-                #oldsize = len(self.history)
                 self.history.append([fromClient_name, toClient_name, msg, time])
-                #return oldsize != len(self.history)
                 
             '''
             Function to print history 
@@ -122,14 +113,14 @@ class DataBase(object):
             def showHistory(self, fromClient_name, toClient_name):
                 historyArr = []
                 retVal = []
-                #print(self.history)
                 for unit in self.history:
                         if unit[0] == fromClient_name and unit[1] == toClient_name:
                                 historyArr.append(unit)
+                        del unit
                 for hist in historyArr:
                         rec = str(hist[0]) + "~" + str(hist[1]) + "~" + str(hist[2]) + "~" + str(hist[3]) + "|"
                         retVal.append(rec)
-                        #print("Sent from {fromC} to {toC}: {message}. Sent at {timeSent}".format(fromC = hist[0], toC = hist[1], message = ' '.join(str(msg) for msg in hist[2]), timeSent = hist[3]))
+                        del hist
                 return retVal         
             '''
             Function to remove client from a database

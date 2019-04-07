@@ -101,11 +101,17 @@ def getHistory():
     sock.send(bytes("/history " + toUser,'UTF-8'))
     history = sock.recv(16384).decode().split('|')
     chatText.delete(1.0, END)
+    #print("This is history: %s" % history)
     for rec in history:
         rec = rec.split('~')
+        #print("THis is rec %s " % rec)
         #TODO fix parse
-        toPrint = str(rec[3]) + '\t' + str(rec[2])
-        chatText.insert(END, toPrint+'\n')
+        try:
+            toPrint = str(rec[3]) + ':\t' + ''.join((str(msg) for msg in rec[2]))
+            chatText.insert(END, toPrint+'\n')
+        except:
+            continue
+        del rec
     '''
     userTo = onlineUsersList.get(int(onlineUsersList.curselection()[0]))
     sock.send(bytes("/history "+userTo, 'UTF-8'))
@@ -117,7 +123,7 @@ def getHistory():
         chatText.insert(END, rec) 
     print(history)
     '''
-
+#this is rec ['Test94', 'Test37', "['HELLO', 'WASUP\\n']", '17:59:38 Test94', 'Test37', "['OLA', 'AMIGO\\n']", '17:59:56']
 def window_deleted():
     sock.send(bytes("bye", 'UTF-8'))
     root.quit()
