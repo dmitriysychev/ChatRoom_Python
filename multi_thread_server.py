@@ -72,6 +72,7 @@ class ClientThread(threading.Thread):
                 print ("Client at ", clientAddress , " disconnected...")
 
 class DataBase(object):
+    #FOR COMMIT
             #Main dictionary to store addresses and names
             clients = {} # {addr: name}
             # TODO choose the best choice for storing history
