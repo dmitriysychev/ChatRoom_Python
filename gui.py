@@ -93,13 +93,15 @@ def openChat(evt):
     index = int(w.curselection()[0])
     value = w.get(index)
     chatFrame.configure(text = "Chat with" + value)
+    chatText.insert(1.0, value)
     chatText.after(100, getHistory)
 
 def getHistory():
     userTo = onlineUsersList.get(int(onlineUsersList.curselection()[0]))
-    sock.send(bytes("/history "+userTo))
+    sock.send(bytes("/history "+userTo, 'UTF-8'))
     history = sock.recv(16384).decode()
-    #TODO insert history 
+    #TODO insert history
+     
     print(history)
 
 def window_deleted():
@@ -109,7 +111,7 @@ def window_deleted():
 def sendMessage():
     userTo = onlineUsersList.get(int(onlineUsersList.curselection()[0]))
     messageText = messageField.get(0, END)
-    sock.send(bytes("/sendto " + userTo + " " + messageText))
+    sock.send(bytes("/sendto " + userTo + " " + messageText, 'UTF-8'))
 
 sendButton.bind('<Button-1>', sendMessage)
 #rendering part
