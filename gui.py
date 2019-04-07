@@ -102,7 +102,7 @@ def getHistory():
     history = sock.recv(16384).decode().split('|')
     chatText.delete(1.0, END)
     for rec in history:
-        chatText.insert(i, rec+'\n')
+        chatText.insert(END, rec+'\n')
     '''
     userTo = onlineUsersList.get(int(onlineUsersList.curselection()[0]))
     sock.send(bytes("/history "+userTo, 'UTF-8'))
