@@ -93,7 +93,6 @@ def openChat(evt):
     index = int(w.curselection()[0])
     value = w.get(index)
     chatFrame.configure(text = "Chat with" + value)
-    chatText.insert(1.0, value)
     chatText.after(100, getHistory)
 
 def getHistory():
@@ -101,7 +100,7 @@ def getHistory():
     sock.send(bytes("/history "+userTo, 'UTF-8'))
     history = sock.recv(16384).decode()
     #TODO insert history
-     
+    history = history.split('|') 
     print(history)
 
 def window_deleted():

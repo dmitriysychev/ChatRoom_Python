@@ -51,6 +51,9 @@ class ClientThread(threading.Thread):
                             time.sleep(1)
                     elif msg.find("/online") > -1 :
                         self.csocket.send(bytes(' '.join(str(elem) for elem in users), 'UTF-8'))
+                    elif msg.find('/history') > -1:
+                        toUser = msg.split(' ')[1]
+                        
                     else:
                         messages.append([name, msg, current_time])
                         print ("from client", msg)
