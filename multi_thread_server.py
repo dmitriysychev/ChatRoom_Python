@@ -44,8 +44,9 @@ class ClientThread(threading.Thread):
                     elif msg.find("/sendto") > -1:
                         fromName = db.getClientName(self.clientAddress)
                         toWhom = msg.split(' ')[1]
-                        # print(' '.join(str(el) for el in msg.split(' ')[2:(len(msg) - len(current_time)) - 1]))
-                        db.append(fromName, toWhom, ' '.join(str(el) for el in msg.split(' ')[2:(len(msg) - len(current_time)) - 1]), current_time)
+                        print(msg.split(' '))
+                        #print(' '.join(str(el) for el in msg.split(' ')[2:(len(msg) - len(current_time))]))
+                        db.append(fromName, toWhom, ' '.join(str(el) for el in msg.split(' ')[2:(len(msg) - len(current_time))]), current_time)
                     else:
                         messages.append([name, msg, current_time])
                         self.csocket.send(bytes("ERRORRRRR",'UTF-8'))
@@ -130,7 +131,7 @@ class DataBase(object):
                 oldsize = self.size()
                 for client in self.clients:
                     if self.clients[client] == name:
-                        del clients[client]
+                        del client
                 return oldsize != self.size()
 
 
