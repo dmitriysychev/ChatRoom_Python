@@ -56,7 +56,6 @@ class DataBase(object):
     #FOR COMMIT
             #Main dictionary to store addresses and names
             clients = {} # {addr: name}
-            # TODO choose the best choice for storing history
             history = [] # [[namefrom, nameto, msg, time], [-||-]]
             data = []
             def __init__(self):
