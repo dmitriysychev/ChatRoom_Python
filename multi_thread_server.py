@@ -50,7 +50,7 @@ class ClientThread(threading.Thread):
                     else:
                         messages.append([name, msg, current_time])
                         self.csocket.send(bytes("ERRORRRRR",'UTF-8'))
-                print ("Client at ", self.clientAddress , " disconnected...")
+                print ("Client ", db.getClientName(self.clientAddress) , " disconnected...")
 
 class DataBase(object):
     #FOR COMMIT
