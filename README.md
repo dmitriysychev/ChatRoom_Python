@@ -1,4 +1,5 @@
 <h1>This is multithreaded Server on Python
-<h2> Test
+  Multi-threaded chat application that can be run on any server.
+  Each client gets its own thread 
 
 
